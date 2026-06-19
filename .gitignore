@@ -1,6 +1,15 @@
 node_modules/
-.env
 npm-debug.log*
+
+# env (локальна конфігурація)
+.env
+.env.*
+
+# артефакт збірки
+dist/
+
+# артефакти тестів
 coverage/
 playwright-report/
 test-results/
+data/e2e-todos.json

@@ -1,3 +1,3 @@
 # Merge Conflict Demo
 
-This line will change.
+This version was created on the `merge-conflict-demo` branch.

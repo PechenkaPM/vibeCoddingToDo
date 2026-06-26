@@ -22,7 +22,7 @@ function createApp(options = {}) {
   app.set("view engine", "ejs");
   app.set("views", path.join(env.rootDir, "views"));
 
-  app.use(helmet());
+  app.use(helmet({ contentSecurityPolicy: false }));
   app.use(morgan(nodeEnv === "production" ? "combined" : "dev"));
   app.use(express.urlencoded({ extended: false }));
   app.use(express.static(path.join(env.rootDir, "public")));

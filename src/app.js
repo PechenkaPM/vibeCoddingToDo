@@ -46,8 +46,13 @@ function createApp(options = {}) {
 
   Sentry.setupExpressErrorHandler(app);
 
-  app.use((error, req, res, _next) => {
+  app.use(async (error, req, res, _next) => {
     console.error(error);
+    try {
+      await Sentry.flush(2000);
+    } catch (flushError) {
+      console.error("Sentry flush failed:", flushError);
+    }
     renderShell(res, 500, "Something went wrong while loading the app.");
   });
 

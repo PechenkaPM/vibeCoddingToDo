@@ -1,3 +1,4 @@
+require("./instrument");
 const Sentry = require("@sentry/node");
 const express = require("express");
 const helmet = require("helmet");

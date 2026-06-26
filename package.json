@@ -20,8 +20,11 @@
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:install": "playwright install chromium"
   },
-  "engines": { "node": ">=18" },
+  "engines": {
+    "node": ">=18"
+  },
   "dependencies": {
+    "@sentry/node": "^10.61.0",
     "ejs": "^3.1.10",
     "express": "^4.21.2",
     "helmet": "^8.1.0",

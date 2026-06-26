@@ -1,3 +1,4 @@
+const Sentry = require("@sentry/node");
 const express = require("express");
 const helmet = require("helmet");
 const morgan = require("morgan");
@@ -22,16 +23,28 @@ function createApp(options = {}) {
   app.set("view engine", "ejs");
   app.set("views", path.join(env.rootDir, "views"));
 
-  app.use(helmet());
+  app.use(helmet({ contentSecurityPolicy: false }));
   app.use(morgan(nodeEnv === "production" ? "combined" : "dev"));
   app.use(express.urlencoded({ extended: false }));
   app.use(express.static(path.join(env.rootDir, "public")));
 
+  app.use((req, res, next) => {
+    Sentry.setUser({ id: "lab-user", username: "Ivasiuk" });
+    Sentry.setTag("page_locale", "uk-UA");
+    next();
+  });
+
   app.use(createRoutes({ todoController }));
+
+  app.get("/debug-sentry", () => {
+    throw new Error("My first Sentry error from VibeCoddedToDo!");
+  });
 
   app.use((req, res) => {
     renderShell(res, 404, "That page does not exist.");
   });
+
+  Sentry.setupExpressErrorHandler(app);
 
   app.use((error, req, res, _next) => {
     console.error(error);
@@ -47,11 +60,7 @@ function renderShell(res, statusCode, errorMessage) {
       todos: [],
       buildType: env.buildType,
       assetPaths: env.assetPaths,
-      stats: {
-        total: 0,
-        remaining: 0,
-        completed: 0,
-      },
+      stats: { total: 0, remaining: 0, completed: 0 },
       titleLimit: 80,
       draftTitle: "",
       errorMessage,
@@ -61,13 +70,9 @@ function renderShell(res, statusCode, errorMessage) {
   res.status(statusCode).render("index", model, (error, html) => {
     if (error) {
       console.error(error);
-      res
-        .status(statusCode)
-        .type("text/plain; charset=utf-8")
-        .send(errorMessage);
+      res.status(statusCode).type("text/plain; charset=utf-8").send(errorMessage);
       return;
     }
-
     res.send(html);
   });
 }
